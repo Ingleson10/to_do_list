@@ -5,20 +5,8 @@ class User(AbstractUser):
     date_of_birth = models.DateField(null=True, blank=True, verbose_name="Date of Birth")
     email = models.EmailField(unique=True, verbose_name="Email")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Creation Date")
-
-    # Resolve conflicts with auth.User
-    groups = models.ManyToManyField(
-        Group,
-        related_name="to_do_user_groups",  # Unique name to avoid conflicts
-        blank=True,
-        verbose_name="Groups"
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name="to_do_user_permissions",  # Unique name to avoid conflicts
-        blank=True,
-        verbose_name="User Permissions"
-    )
+    groups = models.ManyToManyField(Group, related_name='custom_user_groups')
+    user_permissions = models.ManyToManyField(Permission, related_name='custom_user_permissions')
 
     class Meta:
         verbose_name = "User"
@@ -29,19 +17,17 @@ class LoginHistory(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     ip_address = models.GenericIPAddressField()
 
-STATES_CHOICES = [
-    ('AC', 'Acre'), ('AL', 'Alagoas'), ('AP', 'Amapá'), ('AM', 'Amazonas'),
-    ('BA', 'Bahia'), ('CE', 'Ceará'), ('DF', 'Distrito Federal'), ('ES', 'Espírito Santo'),
-    ('GO', 'Goiás'), ('MA', 'Maranhão'), ('MT', 'Mato Grosso'), ('MS', 'Mato Grosso do Sul'),
-    ('MG', 'Minas Gerais'), ('PA', 'Pará'), ('PB', 'Paraíba'), ('PR', 'Paraná'),
-    ('PE', 'Pernambuco'), ('PI', 'Piauí'), ('RJ', 'Rio de Janeiro'), ('RN', 'Rio Grande do Norte'),
-    ('RS', 'Rio Grande do Sul'), ('RO', 'Rondônia'), ('RR', 'Roraima'), ('SC', 'Santa Catarina'),
-    ('SP', 'São Paulo'), ('SE', 'Sergipe'), ('TO', 'Tocantins')
-]
-
 class Address(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
-    state = models.CharField(max_length=2, choices=STATES_CHOICES, verbose_name="State")
+    state = models.CharField(max_length=2, choices=[
+        ('AC', 'Acre'), ('AL', 'Alagoas'), ('AP', 'Amapá'), ('AM', 'Amazonas'),
+        ('BA', 'Bahia'), ('CE', 'Ceará'), ('DF', 'Distrito Federal'), ('ES', 'Espírito Santo'),
+        ('GO', 'Goiás'), ('MA', 'Maranhão'), ('MT', 'Mato Grosso'), ('MS', 'Mato Grosso do Sul'),
+        ('MG', 'Minas Gerais'), ('PA', 'Pará'), ('PB', 'Paraíba'), ('PR', 'Paraná'),
+        ('PE', 'Pernambuco'), ('PI', 'Piauí'), ('RJ', 'Rio de Janeiro'), ('RN', 'Rio Grande do Norte'),
+        ('RS', 'Rio Grande do Sul'), ('RO', 'Rondônia'), ('RR', 'Roraima'), ('SC', 'Santa Catarina'),
+        ('SP', 'São Paulo'), ('SE', 'Sergipe'), ('TO', 'Tocantins')
+    ], verbose_name="State")
     street = models.CharField(max_length=100)
     number = models.CharField(max_length=20)
     complement = models.CharField(max_length=100, blank=True)
@@ -69,32 +55,13 @@ class Note(models.Model):
         verbose_name = "Note"
         verbose_name_plural = "Notes"
 
-    def update_note(self, new_title, new_content, is_completed):
-        
-        self.title = new_title
-        self.content = new_content
-        self.completed = is_completed
-        self.save()
-
-    def delete_note(self):
-        
-        self.delete()
-
 class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
 
-    class Meta:
-        verbose_name = "Category"
-        verbose_name_plural = "Categories"
-
 class Subject(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-
-    class Meta:
-        verbose_name = "Subject"
-        verbose_name_plural = "Subjects"
 
 class File(models.Model):
     note = models.ForeignKey(Note, on_delete=models.CASCADE)
@@ -109,6 +76,13 @@ class Notification(models.Model):
     sent_at = models.DateTimeField(auto_now_add=True)
     note = models.ForeignKey(Note, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+class NotificationType(models.Model):
+    name = models.CharField(max_length=50, unique=True, verbose_name="Notification Type")
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
 
 class Review(models.Model):
     note = models.ForeignKey(Note, on_delete=models.CASCADE)

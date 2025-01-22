@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, LoginHistory, Address, Contact, Note, Category, Subject, File, Sharing, Notification, Review
+from .models import User, LoginHistory, Address, Contact, Note, Category, Subject, File, Sharing, Notification, NotificationType, Review  # Importando os modelos
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
 class LoginHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = LoginHistory
-        fields = ['id', 'user', 'timestamp', 'ip_address', 'state']
+        fields = ['id', 'user', 'timestamp', 'ip_address']  # Removido 'state' que não está no modelo
         read_only_fields = ['id', 'timestamp']
 
     def validate_ip_address(self, value):
@@ -76,6 +76,12 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notification
         fields = ['id', 'type', 'sent_at', 'note', 'user']
         read_only_fields = ['id', 'sent_at']
+
+class NotificationTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NotificationType
+        fields = ['id', 'name']
+        read_only_fields = ['id']
 
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
