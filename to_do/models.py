@@ -16,6 +16,7 @@ class LoginHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     ip_address = models.GenericIPAddressField()
+    user_agent = models.CharField(max_length=255, verbose_name="User Agent")
 
 class Address(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -47,6 +48,8 @@ class Note(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     completed = models.BooleanField(default=False)
+    categories = models.ManyToManyField('Category', blank=True, related_name='notes')
+    subjects = models.ManyToManyField('Subject', blank=True, related_name='notes')
 
     class Meta:
         constraints = [
@@ -56,11 +59,11 @@ class Note(models.Model):
         verbose_name_plural = "Notes"
 
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
 
 class Subject(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
 
 class File(models.Model):
@@ -72,17 +75,14 @@ class Sharing(models.Model):
     shared_with = models.ForeignKey(User, on_delete=models.CASCADE, related_name='shared_notes')
 
 class Notification(models.Model):
-    type = models.CharField(max_length=20, choices=[('email', 'Email'), ('sms', 'SMS')])
+    type = models.ForeignKey('NotificationType', on_delete=models.CASCADE)
     sent_at = models.DateTimeField(auto_now_add=True)
     note = models.ForeignKey(Note, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    
+
 class NotificationType(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="Notification Type")
     description = models.TextField(blank=True)
-
-    def __str__(self):
-        return self.name
 
 class Review(models.Model):
     note = models.ForeignKey(Note, on_delete=models.CASCADE)
