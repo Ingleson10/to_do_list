@@ -16,5 +16,5 @@ Este é um sistema de gerenciamento de notas que utiliza Inteligência Artificia
 - **IA**: Modelos de NLP (Natural Language Processing) com TensorFlow/PyTorch
 - **Autenticação**: JWT
 
-Feito com ❤️ por [Seu Nome](https://github.com/Ingleson10).
+Feito com ❤️ por [Erik Ingleson](https://github.com/Ingleson10).
 
