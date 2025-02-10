@@ -86,10 +86,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'to_do_list',
-        'USER': 'erik_ingleson',
+        'USER': 'erik',
         'PASSWORD': 'Elements@2025',
         'HOST': 'localhost',
         'PORT': '5432',
+        'OPTIONS': {
+            'client_encoding': 'UTF8',
+        },
     }
 }
 
