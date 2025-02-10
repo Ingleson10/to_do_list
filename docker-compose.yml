@@ -3,7 +3,7 @@ services:
     image: postgres:latest
     environment:
       POSTGRES_DB: to_do_list
-      POSTGRES_USER: erikingleson
+      POSTGRES_USER: erik
       POSTGRES_PASSWORD: Elements@2025
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -20,10 +20,10 @@ services:
     depends_on:
       - db
     environment:
-      - DB_NAME=meu_banco_de_dados
-      - DB_USER=usuario
-      - DB_PASSWORD=senha
-      - DB_HOST=db
+      - DB_NAME=to_do_list
+      - DB_USER=erik
+      - DB_PASSWORD=Elements@2025
+      - DB_HOST=localhost
       - DB_PORT=5432
 
 volumes:
