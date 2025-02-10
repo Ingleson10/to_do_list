@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +28,8 @@ SECRET_KEY = 'django-insecure-zimc(##=wuz9%b5v2cx6$rp2+wiyixxlr!mtpkwq()yvongh1w
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+load_dotenv()
 
 
 # Application definition
@@ -85,14 +89,11 @@ WSGI_APPLICATION = 'to_do_list.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'to_do_list',
-        'USER': 'erik',
-        'PASSWORD': 'Elements@2025',
-        'HOST': 'localhost',
-        'PORT': '5432',
-        'OPTIONS': {
-            'client_encoding': 'UTF8',
-        },
+        'NAME': os.getenv('to_do_list'),
+        'USER': os.getenv('erikingleson'),
+        'PASSWORD': os.getenv('Elements@2025'),
+        'HOST': os.getenv('localhost'),
+        'PORT': os.getenv('5432'),
     }
 }
 

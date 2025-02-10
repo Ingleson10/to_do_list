@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: to_do_list
+      POSTGRES_USER: erikingleson
+      POSTGRES_PASSWORD: Elements@2025
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=meu_banco_de_dados
+      - DB_USER=usuario
+      - DB_PASSWORD=senha
+      - DB_HOST=db
+      - DB_PORT=5432
+
+volumes:
+  postgres_data:
