@@ -1,0 +1,43 @@
+# Arquivos de configuração sensíveis
+.env
+
+# Arquivos Python compilados
+__pycache__/
+*.pyc
+*.pyo
+
+# Arquivos de banco de dados SQLite
+db.postgre
+
+# Ambiente virtual
+venv/
+.venv/
+
+# Arquivos de migração do Django
+*/migrations/*.py
+*/migrations/*.pyc
+
+# Logs e cache
+*.log
+*.pot
+*.mo
+
+# Arquivos temporários e cache
+*.bak
+*.swp
+*.swo
+*.swn
+
+# Arquivos do VS Code
+.vscode/
+
+# Arquivos do PyCharm
+.idea/
+
+# Arquivos do Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Arquivos específicos do sistema operacional
+.DS_Store
+Thumbs.db
