@@ -89,11 +89,11 @@ WSGI_APPLICATION = 'to_do_list.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('to_do_list'),
-        'USER': os.getenv('erik'),
-        'PASSWORD': os.getenv('Elements@2025'),
-        'HOST': os.getenv('localhost'),
-        'PORT': os.getenv('5432'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 

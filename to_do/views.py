@@ -3,12 +3,17 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import (
     User, LoginHistory, Address, Contact, Note, Category, Subject, File, 
-    Sharing, Notification, NotificationType, Review
+    Sharing, Notification, NotificationType, Review,
+    NoteAnalysis, NoteSuggestions, ChatInteraction, NoteRecommendation, SearchLog,
+    NoteTag, NoteEntity, UserInteraction, NoteHistory
 )
 from .serializers import (
     UserSerializer, LoginHistorySerializer, AddressSerializer, ContactSerializer,
     NoteSerializer, CategorySerializer, SubjectSerializer, FileSerializer,
-    SharingSerializer, NotificationSerializer, NotificationTypeSerializer, ReviewSerializer
+    SharingSerializer, NotificationSerializer, NotificationTypeSerializer, ReviewSerializer,
+    NoteAnalysisSerializer, NoteSuggestionsSerializer, ChatInteractionSerializer, 
+    NoteRecommendationSerializer, SearchLogSerializer, NoteTagSerializer, 
+    NoteEntitySerializer, UserInteractionSerializer, NoteHistorySerializer
 )
 
 # Define a classe base com permissões padrão
@@ -26,7 +31,6 @@ class LoginHistoryViewSet(BaseViewSet):
     serializer_class = LoginHistorySerializer
 
     def get_queryset(self):
-        # Retorna apenas o histórico do usuário autenticado
         if not self.request.user.is_staff:
             return self.queryset.filter(user=self.request.user)
         return self.queryset
@@ -36,7 +40,6 @@ class AddressViewSet(BaseViewSet):
     serializer_class = AddressSerializer
 
     def get_queryset(self):
-        # Filtro por usuário
         return self.queryset.filter(user=self.request.user)
 
 class ContactViewSet(BaseViewSet):
@@ -44,7 +47,6 @@ class ContactViewSet(BaseViewSet):
     serializer_class = ContactSerializer
 
     def get_queryset(self):
-        # Filtro por usuário
         return self.queryset.filter(user=self.request.user)
 
 class NoteViewSet(BaseViewSet):
@@ -53,7 +55,6 @@ class NoteViewSet(BaseViewSet):
     search_fields = ['title', 'content']  # Permite buscar por título ou conteúdo
 
     def get_queryset(self):
-        # Retorna apenas notas do usuário autenticado
         return self.queryset.filter(user=self.request.user)
 
 class CategoryViewSet(BaseViewSet):
@@ -69,7 +70,6 @@ class FileViewSet(BaseViewSet):
     serializer_class = FileSerializer
 
     def get_queryset(self):
-        # Retorna apenas arquivos vinculados a notas do usuário
         return self.queryset.filter(note__user=self.request.user)
 
 class SharingViewSet(BaseViewSet):
@@ -77,7 +77,6 @@ class SharingViewSet(BaseViewSet):
     serializer_class = SharingSerializer
 
     def get_queryset(self):
-        # Filtro por notas compartilhadas com o usuário
         return self.queryset.filter(shared_with=self.request.user)
 
 class NotificationViewSet(BaseViewSet):
@@ -85,12 +84,10 @@ class NotificationViewSet(BaseViewSet):
     serializer_class = NotificationSerializer
 
     def get_queryset(self):
-        # Filtro por notificações do usuário autenticado
         return self.queryset.filter(user=self.request.user)
 
     @action(detail=False, methods=['get'])
     def unread(self, request):
-        # Endpoint para notificações não lidas
         unread_notifications = self.get_queryset().filter(read=False)
         serializer = self.get_serializer(unread_notifications, many=True)
         return Response(serializer.data)
@@ -104,5 +101,68 @@ class ReviewViewSet(BaseViewSet):
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
-        # Filtro por notas do usuário autenticado
+        return self.queryset.filter(note__user=self.request.user)
+
+# Novas Views para IA e funcionalidades
+class NoteAnalysisViewSet(BaseViewSet):
+    queryset = NoteAnalysis.objects.all()
+    serializer_class = NoteAnalysisSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(note__user=self.request.user)
+
+class NoteSuggestionsViewSet(BaseViewSet):
+    queryset = NoteSuggestions.objects.all()
+    serializer_class = NoteSuggestionsSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(note__user=self.request.user)
+
+class ChatInteractionViewSet(BaseViewSet):
+    queryset = ChatInteraction.objects.all()
+    serializer_class = ChatInteractionSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+class NoteRecommendationViewSet(BaseViewSet):
+    queryset = NoteRecommendation.objects.all()
+    serializer_class = NoteRecommendationSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+class SearchLogViewSet(BaseViewSet):
+    queryset = SearchLog.objects.all()
+    serializer_class = SearchLogSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+class NoteTagsViewSet(BaseViewSet):
+    queryset = NoteTag.objects.all()
+    serializer_class = NoteTagSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(note__user=self.request.user)
+
+class NoteEntitiesViewSet(BaseViewSet):
+    queryset = NoteEntity.objects.all()
+    serializer_class = NoteEntitySerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(note__user=self.request.user)
+
+class UserInteractionViewSet(BaseViewSet):
+    queryset = UserInteraction.objects.all()
+    serializer_class = UserInteractionSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+class NoteHistoryViewSet(BaseViewSet):
+    queryset = NoteHistory.objects.all()
+    serializer_class = NoteHistorySerializer
+
+    def get_queryset(self):
         return self.queryset.filter(note__user=self.request.user)

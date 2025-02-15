@@ -20,7 +20,7 @@ class LoginHistory(models.Model):
 
 class Address(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
-    state = models.CharField(max_length=2, choices=[
+    state = models.CharField(max_length=2, choices=[ 
         ('AC', 'Acre'), ('AL', 'Alagoas'), ('AP', 'Amapá'), ('AM', 'Amazonas'),
         ('BA', 'Bahia'), ('CE', 'Ceará'), ('DF', 'Distrito Federal'), ('ES', 'Espírito Santo'),
         ('GO', 'Goiás'), ('MA', 'Maranhão'), ('MT', 'Mato Grosso'), ('MS', 'Mato Grosso do Sul'),
@@ -92,3 +92,67 @@ class Review(models.Model):
     class Meta:
         verbose_name = "Review"
         verbose_name_plural = "Reviews"
+
+
+# ------------------ Novas Tabelas e Funcionalidades de IA ------------------
+
+# Tabela para armazenar as análises automáticas de notas (resumos, sentimentos)
+class NoteAnalysis(models.Model):
+    note = models.ForeignKey(Note, on_delete=models.CASCADE)
+    summary = models.TextField()  # Resumo gerado pela IA
+    sentiment = models.CharField(max_length=20)  # Sentimento detectado (ex: "positivo", "negativo")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+# Tabela para armazenar sugestões automáticas de melhorias nas notas
+class NoteSuggestions(models.Model):
+    note = models.ForeignKey(Note, on_delete=models.CASCADE)
+    suggestion = models.TextField()  # Sugestão gerada pela IA
+    created_at = models.DateTimeField(auto_now_add=True)
+
+# Tabela para armazenar as interações com o chatbot
+class ChatInteraction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()  # Mensagem enviada pelo usuário
+    response = models.TextField()  # Resposta do chatbot
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+# Tabela para armazenar recomendações de notas feitas pela IA para o usuário
+class NoteRecommendation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recommended_note = models.ForeignKey(Note, on_delete=models.CASCADE)
+    score = models.DecimalField(max_digits=5, decimal_places=2)  # Relevância da recomendação
+    created_at = models.DateTimeField(auto_now_add=True)
+
+# Tabela para armazenar logs de pesquisa semântica
+class SearchLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    query = models.TextField()  # Consulta de pesquisa feita pelo usuário
+    search_results = models.JSONField()  # IDs das notas encontradas
+    created_at = models.DateTimeField(auto_now_add=True)
+
+# Tabela para armazenar as tags geradas automaticamente para as notas
+class NoteTags(models.Model):
+    note = models.ForeignKey(Note, on_delete=models.CASCADE)
+    tag_name = models.CharField(max_length=100)  # Nome da tag gerada pela IA
+
+# Tabela para armazenar entidades extraídas das notas (ex: nomes, locais, datas)
+class NoteEntities(models.Model):
+    note = models.ForeignKey(Note, on_delete=models.CASCADE)
+    entity_type = models.CharField(max_length=100)  # Tipo da entidade (ex: "pessoa", "local")
+    entity_value = models.CharField(max_length=255)  # Valor da entidade extraída
+
+# Tabela para registrar o comportamento de interação do usuário com notas
+class UserInteraction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    note = models.ForeignKey(Note, on_delete=models.CASCADE)
+    interaction_type = models.CharField(max_length=50)  # Tipo de interação (ex: "visualização", "comentário")
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+# Tabela para armazenar o histórico de edições nas notas
+class NoteHistory(models.Model):
+    note = models.ForeignKey(Note, on_delete=models.CASCADE)
+    edited_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    previous_content = models.TextField()  # Conteúdo anterior da nota
+    updated_content = models.TextField()  # Novo conteúdo da nota
+    change_reason = models.TextField()  # Razão da alteração (gerada pela IA)
+    edited_at = models.DateTimeField(auto_now_add=True)

@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_DB: to_do_list
       POSTGRES_USER: erik
-      POSTGRES_PASSWORD: Elements@2025
+      POSTGRES_PASSWORD: Elements@2024
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -22,7 +22,7 @@ services:
     environment:
       - DB_NAME=to_do_list
       - DB_USER=erik
-      - DB_PASSWORD=Elements@2025
+      - DB_PASSWORD=Elements@2024
       - DB_HOST=localhost
       - DB_PORT=5432
 

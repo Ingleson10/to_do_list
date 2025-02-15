@@ -8,7 +8,9 @@ from rest_framework_simplejwt.views import (
 from .views import (
     UserViewSet, LoginHistoryViewSet, AddressViewSet, ContactViewSet, NoteViewSet,
     CategoryViewSet, SubjectViewSet, FileViewSet, SharingViewSet, NotificationViewSet,
-    NotificationTypeViewSet, ReviewViewSet
+    NotificationTypeViewSet, ReviewViewSet, NoteAnalysisViewSet, NoteSuggestionsViewSet,
+    ChatInteractionViewSet, NoteRecommendationViewSet, SearchLogViewSet, NoteTagsViewSet,
+    NoteEntitiesViewSet, UserInteractionViewSet, NoteHistoryViewSet
 )
 
 # Configuração do roteador padrão
@@ -25,6 +27,17 @@ router.register(r'sharings', SharingViewSet)
 router.register(r'notifications', NotificationViewSet)
 router.register(r'notification-types', NotificationTypeViewSet)
 router.register(r'reviews', ReviewViewSet)
+
+# Novos endpoints para IA e funcionalidades relacionadas
+router.register(r'note-analyses', NoteAnalysisViewSet)
+router.register(r'note-suggestions', NoteSuggestionsViewSet)
+router.register(r'chat-interactions', ChatInteractionViewSet)
+router.register(r'note-recommendations', NoteRecommendationViewSet)
+router.register(r'search-logs', SearchLogViewSet)
+router.register(r'note-tags', NoteTagsViewSet)
+router.register(r'note-entities', NoteEntitiesViewSet)
+router.register(r'user-interactions', UserInteractionViewSet)
+router.register(r'note-history', NoteHistoryViewSet)
 
 # Configuração de URLs
 urlpatterns = [
