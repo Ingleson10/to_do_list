@@ -5,15 +5,15 @@ from .models import (
     User, LoginHistory, Address, Contact, Note, Category, Subject, File, 
     Sharing, Notification, NotificationType, Review,
     NoteAnalysis, NoteSuggestions, ChatInteraction, NoteRecommendation, SearchLog,
-    NoteTag, NoteEntity, UserInteraction, NoteHistory
+    NoteTags, NoteEntities, UserInteraction, NoteHistory
 )
 from .serializers import (
     UserSerializer, LoginHistorySerializer, AddressSerializer, ContactSerializer,
     NoteSerializer, CategorySerializer, SubjectSerializer, FileSerializer,
     SharingSerializer, NotificationSerializer, NotificationTypeSerializer, ReviewSerializer,
     NoteAnalysisSerializer, NoteSuggestionsSerializer, ChatInteractionSerializer, 
-    NoteRecommendationSerializer, SearchLogSerializer, NoteTagSerializer, 
-    NoteEntitySerializer, UserInteractionSerializer, NoteHistorySerializer
+    NoteRecommendationSerializer, SearchLogSerializer, NoteTagsSerializer, 
+    NoteEntitiesSerializer, UserInteractionSerializer, NoteHistorySerializer
 )
 
 # Define a classe base com permissões padrão
@@ -140,15 +140,15 @@ class SearchLogViewSet(BaseViewSet):
         return self.queryset.filter(user=self.request.user)
 
 class NoteTagsViewSet(BaseViewSet):
-    queryset = NoteTag.objects.all()
-    serializer_class = NoteTagSerializer
+    queryset = NoteTags.objects.all()
+    serializer_class = NoteTagsSerializer
 
     def get_queryset(self):
         return self.queryset.filter(note__user=self.request.user)
 
 class NoteEntitiesViewSet(BaseViewSet):
-    queryset = NoteEntity.objects.all()
-    serializer_class = NoteEntitySerializer
+    queryset = NoteEntities.objects.all()
+    serializer_class = NoteEntitiesSerializer
 
     def get_queryset(self):
         return self.queryset.filter(note__user=self.request.user)

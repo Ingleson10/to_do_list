@@ -50,8 +50,7 @@ class NoteSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name', 'description']
-        read_only_fields = ['id']
+        fields = '__all__'
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
