@@ -34,8 +34,6 @@ class ContactSerializer(serializers.ModelSerializer):
         return value
     
 class NoteSerializer(serializers.ModelSerializer):
-    categories = Category(many=True, read_only=True)  # Usando serializer aninhado para as categorias
-    subjects = Subject(many=True, read_only=True)  # Usando serializer aninhado para os assuntos
     
     class Meta:
         model = Note
