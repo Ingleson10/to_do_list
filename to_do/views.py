@@ -1,6 +1,9 @@
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
+from django.db import IntegrityError
+from django.db.models import ProtectedError
 from .models import (
     User, LoginHistory, Address, Contact, Note, Category, Subject, File, 
     Sharing, Notification, NotificationType, Review,
@@ -16,15 +19,61 @@ from .serializers import (
     NoteEntitiesSerializer, UserInteractionSerializer, NoteHistorySerializer
 )
 
-# Define a classe base com permissões padrão
+# Centralização do tratamento de exceções
+def handle_exception(exception):
+    if isinstance(exception, ValidationError):
+        return Response(exception.detail, status=status.HTTP_400_BAD_REQUEST)
+    if isinstance(exception, IntegrityError):
+        return Response({'error': 'Erro de integridade do banco de dados'}, status=status.HTTP_400_BAD_REQUEST)
+    if isinstance(exception, ProtectedError):
+        return Response({'error': 'Não é possível excluir o objeto pois possui referências em outras entidades'},
+                         status=status.HTTP_400_BAD_REQUEST)
+    return Response({'error': 'Erro interno do servidor'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class BaseViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]  # Requer autenticação para acessar as views
-    filter_backends = [filters.OrderingFilter, filters.SearchFilter]  # Filtros globais
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+
+    def create(self, request, *args, **kwargs):
+        try:
+            return super().create(request, *args, **kwargs)
+        except Exception as e:
+            return handle_exception(e)
+
+    def list(self, request, *args, **kwargs):
+        try:
+            return super().list(request, *args, **kwargs)
+        except Exception as e:
+            return handle_exception(e)
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            return super().retrieve(request, *args, **kwargs)
+        except Exception as e:
+            return handle_exception(e)
+
+    def update(self, request, *args, **kwargs):
+        try:
+            return super().update(request, *args, **kwargs)
+        except Exception as e:
+            return handle_exception(e)
+
+    def partial_update(self, request, *args, **kwargs):
+        try:
+            return super().partial_update(request, *args, **kwargs)
+        except Exception as e:
+            return handle_exception(e)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except Exception as e:
+            return handle_exception(e)
 
 class UserViewSet(BaseViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    search_fields = ['username', 'email']  # Permite buscas por username ou email
+    search_fields = ['username', 'email']
 
 class LoginHistoryViewSet(BaseViewSet):
     queryset = LoginHistory.objects.all()
@@ -52,7 +101,7 @@ class ContactViewSet(BaseViewSet):
 class NoteViewSet(BaseViewSet):
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
-    search_fields = ['title', 'content']  # Permite buscar por título ou conteúdo
+    search_fields = ['title', 'content']
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
@@ -88,9 +137,12 @@ class NotificationViewSet(BaseViewSet):
 
     @action(detail=False, methods=['get'])
     def unread(self, request):
-        unread_notifications = self.get_queryset().filter(read=False)
-        serializer = self.get_serializer(unread_notifications, many=True)
-        return Response(serializer.data)
+        try:
+            unread_notifications = self.get_queryset().filter(read=False)
+            serializer = self.get_serializer(unread_notifications, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return handle_exception(e)
 
 class NotificationTypeViewSet(BaseViewSet):
     queryset = NotificationType.objects.all()

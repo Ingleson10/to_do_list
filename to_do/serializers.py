@@ -1,50 +1,64 @@
 from rest_framework import serializers
-from .models import User, LoginHistory, Address, Contact, Note, Category, Subject, File, Sharing, Notification, NotificationType, Review, NoteAnalysis, NoteSuggestions, ChatInteraction, NoteRecommendation, SearchLog, NoteTags, NoteEntities, UserInteraction, NoteHistory  # Importando os modelos
+from .models import (
+    User, LoginHistory, Address, Contact, Note, Category, Subject, File, 
+    Sharing, Notification, NotificationType, Review, NoteAnalysis, 
+    NoteSuggestions, ChatInteraction, NoteRecommendation, SearchLog, 
+    NoteTags, NoteEntities, UserInteraction, NoteHistory
+)
+
+# Funções auxiliares para validação
+def validate_postal_code(value):
+    if len(value) != 8:
+        raise serializers.ValidationError("Postal code must have 8 characters.")
+    return value
+
+def validate_phone(value):
+    if len(value) < 10 or len(value) > 15:
+        raise serializers.ValidationError("Phone number should have between 10 and 15 digits.")
+    return value
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
-        
+
 class LoginHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = LoginHistory
-        fields = ['id', 'user', 'timestamp', 'ip_address', 'user_agent']  # Incluindo 'user_agent'
+        fields = ['id', 'user', 'timestamp', 'ip_address', 'user_agent']
         read_only_fields = ['id', 'timestamp']
 
     def validate_ip_address(self, value):
+        # Adicionar validação customizada para IP, se necessário
         return value
-    
+
 class AddressSerializer(serializers.ModelSerializer):
+    postal_code = serializers.CharField(validators=[validate_postal_code])  # Validação de código postal
+
     class Meta:
         model = Address
         fields = ['id', 'user', 'state', 'street', 'number', 'complement', 'neighborhood', 'city', 'postal_code']
-        read_only_fields = ['id']  # O ID deve ser somente leitura
+        read_only_fields = ['id']
 
-    def validate_postal_code(self, value):
-        return value
-    
 class ContactSerializer(serializers.ModelSerializer):
+    mobile_phone = serializers.CharField(validators=[validate_phone])  # Validação do telefone
+
     class Meta:
         model = Contact
         fields = ['id', 'user', 'landline', 'mobile_phone']
-        read_only_fields = ['id']  # O ID deve ser somente leitura
+        read_only_fields = ['id']
 
-    def validate_mobile_phone(self, value):
-        return value
-    
 class NoteSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = Note
         fields = ['id', 'user', 'title', 'content', 'created_at', 'updated_at', 'completed', 'categories', 'subjects']
-        read_only_fields = ['id', 'user', 'created_at', 'updated_at']  # Campos que não devem ser alterados pelo usuário
+        read_only_fields = ['id', 'user', 'created_at', 'updated_at']
 
     def validate_title(self, value):
         if not value:
             raise serializers.ValidationError("Title cannot be empty.")
         return value
-    
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -86,7 +100,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ['id', 'note', 'rating', 'comment']
         read_only_fields = ['id']
 
-# Novos Serializers baseados nas novas tabelas adicionadas para IA
+# Serializers para IA e funcionalidades de recomendação
 
 class NoteAnalysisSerializer(serializers.ModelSerializer):
     class Meta:

@@ -28,22 +28,22 @@ SECRET_KEY = 'django-insecure-zimc(##=wuz9%b5v2cx6$rp2+wiyixxlr!mtpkwq()yvongh1w
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 load_dotenv()
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'to_do',
-    'rest_framework',
-    'rest_framework_simplejwt',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'to_do',
 ]
 
 MIDDLEWARE = [
@@ -55,9 +55,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# settings.py
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
@@ -122,6 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'to_do.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
