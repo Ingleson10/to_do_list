@@ -1,6 +1,10 @@
 from django.contrib import admin
-from .models import User, LoginHistory, Address, Contact, Note, Category, Subject, File, Sharing, Notification, NotificationType, Review
-from .models import NoteAnalysis, NoteSuggestions, ChatInteraction, NoteRecommendation, SearchLog, NoteTags, NoteEntities, UserInteraction, NoteHistory
+from .models import (
+    User, LoginHistory, Address, Contact, Note, Category, Subject, File, 
+    Sharing, Notification, NotificationType, Review,
+    NoteAnalysis, NoteSuggestion, ChatInteraction, NoteRecommendation, 
+    SearchLog, NoteTag, NoteEntity, UserInteraction, NoteHistory
+)
 
 # Personalização de Admin para User
 class UserAdmin(admin.ModelAdmin):
@@ -28,11 +32,11 @@ admin.site.register(Notification)
 admin.site.register(NotificationType)
 admin.site.register(Review)
 admin.site.register(NoteAnalysis)
-admin.site.register(NoteSuggestions)
+admin.site.register(NoteSuggestion) 
 admin.site.register(ChatInteraction)
 admin.site.register(NoteRecommendation)
 admin.site.register(SearchLog)
-admin.site.register(NoteTags)
-admin.site.register(NoteEntities)
+admin.site.register(NoteTag)       
+admin.site.register(NoteEntity)      
 admin.site.register(UserInteraction)
 admin.site.register(NoteHistory)

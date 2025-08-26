@@ -5,21 +5,21 @@ from rest_framework.exceptions import ValidationError
 from django.db import IntegrityError
 from django.db.models import ProtectedError
 from .models import (
-    User, LoginHistory, Address, Contact, Note, Category, Subject, File, 
+    User, LoginHistory, Address, Contact, Note, Category, Subject, File,
     Sharing, Notification, NotificationType, Review,
-    NoteAnalysis, NoteSuggestions, ChatInteraction, NoteRecommendation, SearchLog,
-    NoteTags, NoteEntities, UserInteraction, NoteHistory
+    NoteAnalysis, NoteSuggestion, ChatInteraction, NoteRecommendation, SearchLog,
+    NoteTag, NoteEntity, UserInteraction, NoteHistory
 )
 from .serializers import (
     UserSerializer, LoginHistorySerializer, AddressSerializer, ContactSerializer,
     NoteSerializer, CategorySerializer, SubjectSerializer, FileSerializer,
     SharingSerializer, NotificationSerializer, NotificationTypeSerializer, ReviewSerializer,
-    NoteAnalysisSerializer, NoteSuggestionsSerializer, ChatInteractionSerializer, 
-    NoteRecommendationSerializer, SearchLogSerializer, NoteTagsSerializer, 
-    NoteEntitiesSerializer, UserInteractionSerializer, NoteHistorySerializer
+    NoteAnalysisSerializer, NoteSuggestionSerializer, ChatInteractionSerializer,
+    NoteRecommendationSerializer, SearchLogSerializer, NoteTagSerializer,
+    NoteEntitySerializer, UserInteractionSerializer, NoteHistorySerializer
 )
 
-# Centralização do tratamento de exceções
+# ---------------- Exception Handling ----------------
 def handle_exception(exception):
     if isinstance(exception, ValidationError):
         return Response(exception.detail, status=status.HTTP_400_BAD_REQUEST)
@@ -27,9 +27,10 @@ def handle_exception(exception):
         return Response({'error': 'Erro de integridade do banco de dados'}, status=status.HTTP_400_BAD_REQUEST)
     if isinstance(exception, ProtectedError):
         return Response({'error': 'Não é possível excluir o objeto pois possui referências em outras entidades'},
-                         status=status.HTTP_400_BAD_REQUEST)
+                        status=status.HTTP_400_BAD_REQUEST)
     return Response({'error': 'Erro interno do servidor'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+# ---------------- Base ViewSet ----------------
 class BaseViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
@@ -70,6 +71,7 @@ class BaseViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return handle_exception(e)
 
+# ---------------- ViewSets ----------------
 class UserViewSet(BaseViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -155,7 +157,7 @@ class ReviewViewSet(BaseViewSet):
     def get_queryset(self):
         return self.queryset.filter(note__user=self.request.user)
 
-# Novas Views para IA e funcionalidades
+# ---------------- AI and Advanced Features ----------------
 class NoteAnalysisViewSet(BaseViewSet):
     queryset = NoteAnalysis.objects.all()
     serializer_class = NoteAnalysisSerializer
@@ -164,8 +166,8 @@ class NoteAnalysisViewSet(BaseViewSet):
         return self.queryset.filter(note__user=self.request.user)
 
 class NoteSuggestionsViewSet(BaseViewSet):
-    queryset = NoteSuggestions.objects.all()
-    serializer_class = NoteSuggestionsSerializer
+    queryset = NoteSuggestion.objects.all()
+    serializer_class = NoteSuggestionSerializer
 
     def get_queryset(self):
         return self.queryset.filter(note__user=self.request.user)
@@ -192,15 +194,15 @@ class SearchLogViewSet(BaseViewSet):
         return self.queryset.filter(user=self.request.user)
 
 class NoteTagsViewSet(BaseViewSet):
-    queryset = NoteTags.objects.all()
-    serializer_class = NoteTagsSerializer
+    queryset = NoteTag.objects.all()
+    serializer_class = NoteTagSerializer
 
     def get_queryset(self):
         return self.queryset.filter(note__user=self.request.user)
 
 class NoteEntitiesViewSet(BaseViewSet):
-    queryset = NoteEntities.objects.all()
-    serializer_class = NoteEntitiesSerializer
+    queryset = NoteEntity.objects.all()
+    serializer_class = NoteEntitySerializer
 
     def get_queryset(self):
         return self.queryset.filter(note__user=self.request.user)
